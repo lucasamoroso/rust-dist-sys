@@ -35,6 +35,6 @@ impl Node<EchoPayload> for EchoNode {
 }
 
 fn main() -> anyhow::Result<()> {
-    let mut node = EchoNode { id: 1 };
-    main_loop(&mut node)
+    let node = EchoNode { id: 1 };
+    main_loop(node)
 }

@@ -73,7 +73,7 @@ pub trait Node<P> {
     fn handle(self, message: &Message<P>) -> anyhow::Result<Option<Message<P>>>;
 }
 
-pub fn main_loop<P, N: Node<P> + Copy>(node: &mut N) -> anyhow::Result<()>
+pub fn main_loop<P, N: Node<P> + Copy>(node: N) -> anyhow::Result<()>
 where
     P: DeserializeOwned + Serialize,
 {
