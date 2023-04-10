@@ -1,4 +1,4 @@
-use rust_dist_sys::{main_loop, Message, Node};
+use rust_dist_sys::{into_reply, main_loop, Message, Node};
 use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
@@ -16,13 +16,16 @@ struct EchoNode {
 impl Node<EchoPayload> for EchoNode {
     fn handle(
         &mut self,
-        message: &mut Message<EchoPayload>,
+        message: &Message<EchoPayload>,
     ) -> anyhow::Result<Option<Message<EchoPayload>>> {
         match &message.body.payload {
             EchoPayload::Echo { echo } => {
-                let reply = message.clone().into_reply(EchoPayload::EchoOk {
-                    echo: echo.to_string(),
-                });
+                let reply = into_reply(
+                    &message,
+                    EchoPayload::EchoOk {
+                        echo: echo.to_string(),
+                    },
+                );
 
                 anyhow::Ok(Some(reply))
             }

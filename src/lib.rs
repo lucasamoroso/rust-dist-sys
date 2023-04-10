@@ -20,17 +20,15 @@ pub struct MessageBody<T> {
     pub payload: T,
 }
 
-impl<T> Message<T> {
-    pub fn into_reply(self, payload: T) -> Self {
-        Self {
-            src: self.dest,
-            dest: self.src,
-            body: MessageBody {
-                msg_id: self.body.msg_id,
-                in_reply_to: self.body.msg_id,
-                payload,
-            },
-        }
+pub fn into_reply<T>(incoming_msg: &Message<T>, payload: T) -> Message<T> {
+    Message {
+        src: incoming_msg.dest.clone(),
+        dest: incoming_msg.src.clone(),
+        body: MessageBody {
+            msg_id: incoming_msg.body.msg_id,
+            in_reply_to: incoming_msg.body.msg_id,
+            payload,
+        },
     }
 }
 
@@ -75,7 +73,7 @@ fn init_ok_message(init_msg: Message<Init>) -> Message<InitOk> {
 }
 
 pub trait Node<P> {
-    fn handle(&mut self, message: &mut Message<P>) -> anyhow::Result<Option<Message<P>>>;
+    fn handle(&mut self, message: &Message<P>) -> anyhow::Result<Option<Message<P>>>;
 }
 
 pub fn main_loop<P, N: Node<P> + Copy>(node: &mut N) -> anyhow::Result<()>
@@ -101,11 +99,11 @@ where
 
     for line in stdin {
         let line = line.context("Maelstrom input from STDIN could not be read")?;
-        let mut message: Message<P> = serde_json::from_str(&line)
+        let message: Message<P> = serde_json::from_str(&line)
             .context("Maelstrom input from STDIN could not be deserialized")?;
 
         let reply: Option<Message<P>> = node
-            .handle(&mut message)
+            .handle(&message)
             .context("Node handle function failed")?;
 
         match reply {
