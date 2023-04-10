@@ -15,7 +15,7 @@ struct EchoNode {
 
 impl Node<EchoPayload> for EchoNode {
     fn handle(
-        &mut self,
+        self,
         message: &Message<EchoPayload>,
     ) -> anyhow::Result<Option<Message<EchoPayload>>> {
         match &message.body.payload {

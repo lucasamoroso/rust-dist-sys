@@ -1,9 +1,6 @@
 use anyhow::Context;
 use serde::{de::DeserializeOwned, Deserialize, Serialize};
-use std::{
-    any,
-    io::{BufRead, Write},
-};
+use std::io::{BufRead, Write};
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct Message<T> {
@@ -73,7 +70,7 @@ fn init_ok_message(init_msg: Message<Init>) -> Message<InitOk> {
 }
 
 pub trait Node<P> {
-    fn handle(&mut self, message: &Message<P>) -> anyhow::Result<Option<Message<P>>>;
+    fn handle(self, message: &Message<P>) -> anyhow::Result<Option<Message<P>>>;
 }
 
 pub fn main_loop<P, N: Node<P> + Copy>(node: &mut N) -> anyhow::Result<()>
