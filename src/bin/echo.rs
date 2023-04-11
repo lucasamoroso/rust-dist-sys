@@ -14,6 +14,9 @@ struct EchoNode {
 }
 
 impl Node<EchoPayload> for EchoNode {
+    // TODO this method is not fully typesafety because the Message will be always an EchoOk, it'll
+    // never be the case that the returned message will be an Echo, it'd be nice to change this
+    // signature to just return an EchoOk instead of an EchoPayload (which also include Echo)
     fn handle(
         self,
         message: &Message<EchoPayload>,
