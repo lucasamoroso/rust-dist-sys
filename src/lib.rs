@@ -55,17 +55,17 @@ impl InitOk {
             typ: InitType::InitOk,
         }
     }
-}
 
-fn init_ok_message(init_msg: Message<Init>) -> Message<InitOk> {
-    Message {
-        src: init_msg.dest,
-        dest: init_msg.src,
-        body: MessageBody {
-            msg_id: Some(0),
-            in_reply_to: init_msg.body.msg_id,
-            payload: InitOk::new(),
-        },
+    fn from(init_msg: Message<Init>) -> Message<InitOk> {
+        Message {
+            src: init_msg.dest,
+            dest: init_msg.src,
+            body: MessageBody {
+                msg_id: Some(0),
+                in_reply_to: init_msg.body.msg_id,
+                payload: InitOk::new(),
+            },
+        }
     }
 }
 
@@ -89,7 +89,7 @@ where
     )
     .context("init message could not be deserialized")?;
 
-    let reply = init_ok_message(init_msg);
+    let reply = InitOk::from(init_msg);
     serde_json::to_writer(&mut stdout, &reply).context("serialize response to init")?;
     // Write the response for an init message
     stdout.write_all(b"\n").context("write trailing newline")?;
